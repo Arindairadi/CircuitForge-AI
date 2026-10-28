@@ -1,0 +1,26 @@
+# UNTESTED here (Docker unavailable in the build environment). Postgres path is also untested; SQLite path is covered by tests.
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: circuitforge
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: circuitforge
+    volumes: [pg-data:/var/lib/postgresql/data]
+    healthcheck: {test: ["CMD-SHELL", "pg_isready -U circuitforge"], interval: 5s, retries: 10}
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://circuitforge:${POSTGRES_PASSWORD}@db:5432/circuitforge
+      CORS_ORIGINS: http://localhost:8080
+      ARTIFACT_DIR: /data/artifacts
+      PCBNEW_PYTHON: /usr/bin/python3
+    volumes: [cf-data:/data]
+    depends_on: {db: {condition: service_healthy}}
+  frontend:
+    build: ./frontend
+    ports: ["8080:80"]
+    depends_on: [backend]
+volumes:
+  pg-data:
+  cf-data:

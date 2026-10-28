@@ -1,0 +1,2 @@
+# Deployment
+`docker compose up --build` (the compose/Dockerfiles were statically checked only; images were never built here. PostgreSQL 16 itself was tested directly: migrations and the full test suite pass): postgres + backend (runs alembic upgrade head; installs ngspice + KiCad) + nginx frontend. Set POSTGRES_PASSWORD. Put a TLS reverse proxy in front. Backup: pg_dump plus the cf-data volume (artifacts). Restore: restore the dump, then the volume. The backend's Python must be able to import pcbnew (compose sets PCBNEW_PYTHON=/usr/bin/python3; verify in your image).

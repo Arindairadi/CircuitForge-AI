@@ -1,0 +1,2 @@
+# PCB workflow (KiCad 7.0.x)
+1. pcbnew (Python subprocess) loads standard footprints, assigns nets, places parts in one row, routes each net (F.Cu stubs + vias + B.Cu channels), adds an Edge.Cuts outline. 2. KiCad's own DRC (WriteDRCReport) runs on the saved file. 3. kicad-cli exports Gerbers, drill, position CSV and SVG; each file is checked and zipped. kicad-cli 7.0 has no DRC/ERC commands, hence pcbnew for DRC and ERC reported as not executed. The result always says not ready for fabrication.
